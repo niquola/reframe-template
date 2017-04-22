@@ -2,10 +2,8 @@
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [reagent.core :as reagent]
             [re-frame.core :as rf]
+            [ui.routes :refer [href]]
             [clojure.string :as str]))
-
-(defn href [& parts]
-  (str "#/" (str/join "/" (map (fn [x] (if (keyword? x) (name x) (str x))) parts))))
 
 (defn patients [params]
   (let [route @(rf/subscribe [:route-map/current-route])]
@@ -20,8 +18,9 @@
    [:a {:href (href :patients)} "Back"]
    [:h3 "Patient" (pr-str params)]])
 
-(def routes {:. :patients
-             [:pt/id] {:. :show-patient}})
 
-(def pages {:patients patients
-            :show-patient show-patient})
+(def routes {:. :patients/index
+             [:pt/id] {:. :patients/show-patient}})
+
+(def pages {:patients/index patients
+            :patients/show-patient show-patient})

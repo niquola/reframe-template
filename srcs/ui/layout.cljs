@@ -4,6 +4,7 @@
    [reagent.core :as reagent]
    [ui.styles :as styles]
    [re-frame.core :as rf]
+   [ui.routes :refer [href]]
    [clojure.string :as str]))
 
 
@@ -28,7 +29,7 @@
       [:button.btn.btn-default {:type "submit"} "Submit"]]
      [:ul.nav.navbar-nav.navbar-right
       [:li [:a {:href "#"} "Notifications"]]
-      [:li [:a {:href "#"} "Profile"]]
+      [:li [:a {:href (href :profile)} "Profile"]]
       #_[:li.dropdown
        [:a.dropdown-toggle
         {:aria-expanded "false",

@@ -3,6 +3,7 @@
   (:require
    [reagent.core :as reagent]
    [ui.pages.patients :as patients]
+   [ui.pages.user :as user]
    [re-frame.core :as rf]
    [clojure.string :as str]))
 
@@ -17,6 +18,7 @@
 
 
 (def routes {:. :index
+             "profile" user/routes
              "patients" patients/routes})
 
-(def pages (merge {:index index} patients/pages))
+(def pages (merge {:index index} patients/pages user/pages))
