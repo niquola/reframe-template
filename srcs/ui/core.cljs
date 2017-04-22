@@ -2,7 +2,6 @@
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require
    [cljsjs.react]
-   [clojure.string :as str]
    [reagent.core :as reagent]
    [re-frame.core :as rf]
    [re-frisk.core :refer [enable-re-frisk!]]
@@ -12,7 +11,6 @@
    [devtools.core :as devtools]))
 
 (devtools/install!)
-
 
 (defn current-page []
   (let [{page :match params :params} @(rf/subscribe [:route-map/current-route])]
