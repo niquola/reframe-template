@@ -7,6 +7,7 @@
    [re-frisk.core :refer [enable-re-frisk!]]
    [frames.routing]
    [ui.pages.core :as pages]
+   [ui.routes :as routes]
    [ui.layout :as layout]
    [devtools.core :as devtools]))
 
@@ -21,7 +22,7 @@
 (rf/reg-event-fx
  ::initialize
  (fn [cofx [_ ev]]
-   {:dispatch [:route-map/init pages/routes]}))
+   {:dispatch [:route-map/init routes/routes]}))
 
 
 (defn- mount-root []

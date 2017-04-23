@@ -9,6 +9,4 @@
   [:div.index [:h3 "User Profile"]])
 
 
-(def routes {:. :user/profile})
-
 (def pages {:user/profile profile})

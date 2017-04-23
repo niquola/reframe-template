@@ -21,14 +21,14 @@
      [:a.navbar-brand {:href "#/"} "Brand"]]
     [:div.collapse.navbar-collapse
      [:ul.nav.navbar-nav
-      [:li.active [:a {:href "#/patients"} "Patients" [:span.sr-only "(current)"]]]
-      [:li [:a {:href "#/config"} "Config"]]]
+      [:li.active [:a {:href (href :entities)} "Entities" [:span.sr-only "(current)"]]]
+      [:li [:a {:href (href :entities :new)} "New Entity"]]]
      [:form.navbar-form.navbar-left
       [:div.form-group
        [:input.form-control {:placeholder "Search", :type "text"}]]
       [:button.btn.btn-default {:type "submit"} "Submit"]]
      [:ul.nav.navbar-nav.navbar-right
-      [:li [:a {:href "#"} "Notifications"]]
+      [:li [:a {:href (href :notifications)} "Notifications"]]
       [:li [:a {:href (href :profile)} "Profile"]]
       #_[:li.dropdown
        [:a.dropdown-toggle
