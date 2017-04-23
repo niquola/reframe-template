@@ -1,10 +1,14 @@
-New Aidbox UI
-=============
+UI project template
+===================
 
-Install `sassc` with Homebrew/make.
 
-To start web server & SASS watcher, run:
 
-    lein cooper
+```
+lein repl
 
-Then start your damn repl and invoke `(start-fw)`.
+> (start-fw)
+
+# open localhost:3000
+```
+
+
