@@ -4,22 +4,19 @@
             [re-frame.core :as rf]
             [clojure.string :as str]))
 
+
+(def base-url "http://cleoproto.aidbox.io/fhir")
+
 (rf/reg-event-fx
  :fhir/search
  (fn [coef [_ args]]
-   (.log js/console "FHIR" args)
-   (if (:Patient (:db coef))
-     coef
-     {:dispatch
-      [:fhir/loaded args
-       [{:id "pt-1" :birthDate "1980" :name [{:given ["Nikolai"] :family []} :gender "Male"]}
-        {:id "pt-2" :telecom [] :name [{:given ["Marat"] :family []}]  :gender "Male"}
-        {:id "pt-3" :name [{:given ["Lara"] :family []}] :gender "Female"}]]})))
+   {:json/fetch {:uri (str base-url "/" (:resourceType args))
+                 :success {:event :fhir/search-results
+                           :resourceType (:resourceType args)}}}))
 
 (rf/reg-event-fx
  :fhir/read
  (fn [coef args]
-   (.log js/console "FHIR get" args)
    coef))
 
 (rf/reg-event-db
@@ -32,12 +29,31 @@
  (fn [db [_ path]]
    (assoc-in db (into [:original] path) (get-in db path))))
 
+(rf/reg-event-fx
+ :fhir/update
+ (fn [{db :db} [_ {path :path succ :success :as args}]]
+   (.log js/console "update" args)
+   (when-let [res (get-in db path)]
+     {:json/fetch {:uri (str base-url "/" (:resourceType res) "/" (:id res))
+                   :method "put"
+                   :body res
+                   :success {:event :fhir/updated
+                             :path path
+                             :success succ}}})))
+
+(rf/reg-event-fx
+ :fhir/updated
+ (fn [{db :db} [_ {succ :success :as args}]]
+   (.log js/console "updated" args)
+   {:dispatch [(:event succ) succ]}))
+
 (rf/reg-event-db
- :fhir/loaded
- (fn [db [_ {rt :resourceType :as args} resp]]
-   (.log js/console "FHIR loaded" args resp)
+ :fhir/search-results
+ (fn [db [_ {rt :resourceType bundle :data :as args}]]
+   (.log js/console "FHIR loaded" args bundle)
    (let [idx (reduce (fn [acc res]
-                       (assoc acc (:id res) res)) {} resp)]
+                       (assoc acc (:id res) res)) {}
+                     (map :resource (:entry bundle)))]
      (-> db
          (assoc-in [(keyword rt)] idx)
          (assoc-in [:original (keyword rt)] idx)))))

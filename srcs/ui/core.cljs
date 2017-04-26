@@ -7,6 +7,7 @@
    [re-frame.core :as rf]
    [re-frisk.core :refer [enable-re-frisk!]]
    [frames.routing]
+   [frames.xhr]
    [frames.cookeis :as cookies]
    [frames.openid :as openid]
    [frames.redirect :as redirect]
@@ -18,13 +19,15 @@
 
 (devtools/install!)
 
-;; (def open-id-keys
-;;   {:client-id "646067746089-6ujhvnv1bi8qvd7due8hdp3ob9qtcumv.apps.googleusercontent.com"
-;;    :uri "https://accounts.google.com/o/oauth2/v2/auth"})
-
 (def open-id-keys
-  {:client-id "khI6JcdsQ3dgHMdWJnej0OZjr5DXGWRU"
-   :uri "https://aidbox.auth0.com/authorize"})
+  {:client-id "646067746089-6ujhvnv1bi8qvd7due8hdp3ob9qtcumv.apps.googleusercontent.com"
+   :uri "https://accounts.google.com/o/oauth2/v2/auth"})
+
+(def base-url "http://cleoproto.aidbox.io/fhir")
+
+;; (def open-id-keys
+;;   {:client-id "khI6JcdsQ3dgHMdWJnej0OZjr5DXGWRU"
+;;    :uri "https://aidbox.auth0.com/authorize"})
 
 (defn current-page []
   (let [{page :match params :params} @(rf/subscribe [:route-map/current-route])]

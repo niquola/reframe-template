@@ -78,9 +78,15 @@
 (rf/reg-event-fx
  :patient/save
  (fn [coef [_ path]]
-   (.log js/console "SAve" path)
-   {:dispatch [:fhir/commit path]
-    :route-map/redirect (href :patients)}))
+   {:dispatch [:fhir/update {:path path
+                             :success {:event :patient/saved
+                                       :path path}}]}))
+
+(rf/reg-event-fx
+ :patient/saved
+ (fn [coef [_ {path :path}]]
+   (.log js/console "Saved")
+   {:route-map/redirect (href :patients)}))
 
 (rf/reg-event-fx
  :patient/reset

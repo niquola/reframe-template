@@ -19,7 +19,8 @@
                         "Authorization" (str "Bearer " token)})
         fetch-opts (-> (merge {:method "get"} opts)
                        (dissoc :uri :headers :success :error :params)
-                       (assoc :headers headers))]
+                       (assoc :headers headers))
+        fetch-opts (if (:body opts) (assoc fetch-opts :body (.stringify js/JSON (clj->js (:body opts)))))]
     (->
      (js/fetch (str (:uri opts) (when params (str "?" (to-query params))))
                (clj->js fetch-opts))
