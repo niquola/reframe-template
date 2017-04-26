@@ -23,7 +23,7 @@
 (rf/reg-event-fx
  :route-map/init
  (fn [cofx [_ routes]]
-   {:db {:route-map/routes routes}
+   {:db (assoc (:db cofx) :route-map/routes routes)
     :history {}}))
 
 (rf/reg-fx
@@ -31,3 +31,9 @@
  (fn [_]
    (aset js/window "onhashchange" dispatch-routes)
    (dispatch-routes nil)))
+
+(rf/reg-fx
+ :route-map/redirect
+ (fn [href]
+   (.log js/console "REDIRECT FX" href)
+   (aset (.-location js/window) "hash" href)))

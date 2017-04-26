@@ -5,9 +5,10 @@
 (def routes {:. :core/index
              "profile"  {:. :user/profile}
              "notifications" {:. :core/notifications}
-             "entities" {:. :entities/index
-                         "new" {:. :entities/new}
-                         [:pt/id] {:. :entities/show-entity}}})
+             "patients" {:. :patients/index
+                         "new" {:. :patients/new}
+                         [:pt/id]  {:. :patients/show
+                                    "edit" {:. :patients/edit}}}})
 
 (defn href [& parts]
   (let [url (str "/" (str/join "/" (map (fn [x] (if (keyword? x) (name x) (str x))) parts)))]
