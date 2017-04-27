@@ -82,7 +82,7 @@
 
                             ;; :externs [] 
 
-                            :output-to "resources/public/js/ui.js"
-                            :output-dir "resources/public/js/out"
+                            :output-to "build/js/ui.js"
+                            :output-dir "build/js/out"
                             :optimizations :advanced
                             :pretty-print  false}}}}}})

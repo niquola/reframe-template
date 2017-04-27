@@ -23,3 +23,11 @@ lein repl
 ```
 
 
+## Build
+
+```sh
+lein with-profile prod cljsbuild once ui
+```
+
+
+
