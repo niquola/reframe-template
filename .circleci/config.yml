@@ -34,7 +34,7 @@ jobs:
           command: |
               if [ "${CIRCLE_BRANCH}" == "master" ]; then
                 apt-get update && apt-get install -y awscli
-                AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY aws s3 cp --recursive build s3://cleo-poc-bucket
+                aws s3 cp --recursive build s3://cleo-poc-bucket
               fi
 
       - store_artifacts:
