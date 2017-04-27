@@ -19,4 +19,5 @@ jobs:
       - run: bin/lein with-profile prod cljsbuild once ui
       - store_artifacts:
           path: build
+          path: target
           destination: public

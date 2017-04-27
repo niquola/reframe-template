@@ -5,7 +5,6 @@
    [cljsjs.react]
    [reagent.core :as reagent]
    [re-frame.core :as rf]
-   [re-frisk.core :refer [enable-re-frisk!]]
    [frames.routing]
    [frames.xhr]
    [frames.debounce]
@@ -18,10 +17,7 @@
    [ui.pages.core :as pages]
    [ui.routes :as routes]
    [ui.layout :as layout]
-   [ui.fhir :as fhir]
-   [devtools.core :as devtools]))
-
-(devtools/install!)
+   [ui.fhir :as fhir]))
 
 (def open-id-keys
   {:client-id "646067746089-6ujhvnv1bi8qvd7due8hdp3ob9qtcumv.apps.googleusercontent.com"
@@ -66,5 +62,4 @@
 
 (defn init! []
   (rf/dispatch [::initialize])
-  (enable-re-frisk!)
   (mount-root))

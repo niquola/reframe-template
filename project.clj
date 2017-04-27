@@ -17,7 +17,7 @@
                  [route-map "0.0.4"]]
 
   :plugins [[lein-environ "1.1.0"]
-            [lein-cljsbuild "1.1.5"]
+            [lein-cljsbuild "1.1.6"]
             [lein-ancient "0.6.10"]]
 
   :min-lein-version "2.5.0"
@@ -72,17 +72,16 @@
                            ;; :externs []
                            }}}}}
 
-             :prod {:source-paths ["src/cljs" "src/clj"]
-                    :cljsbuild
+             :prod {:cljsbuild
                     {:builds
                      {:ui {:source-paths ["srcs" "env/prod/cljs"]
+                           :verbose true
                            :compiler
                            {:main "ui.prod"
-                            ;; :foreign-libs [] 
-
-                            ;; :externs [] 
-
+                            :verbose true
+                            ;; :foreign-libs []
+                            ;; :externs []
                             :output-to "build/js/ui.js"
-                            :output-dir "build/js/out"
+                            ;; :output-dir "build/js/out"
                             :optimizations :advanced
                             :pretty-print  false}}}}}})

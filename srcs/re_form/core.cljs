@@ -17,6 +17,7 @@
 (rf/reg-event-db
  :re-form/change
  (fn [db [_ path value]]
+   (.log js/console "ups")
    (insert-by-path db path value)))
 
 (rf/reg-sub-raw
