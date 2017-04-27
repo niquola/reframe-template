@@ -26,12 +26,9 @@ jobs:
             - $HOME/.lein
           key: << checksum "project.clj" >>
 
-      - run: rm -rf build
-      - run: bin/lein with-profile prod cljsbuild once ui
       - run: cp resources/public/index.html build
       - run: cp resources/public/icon.png build
-
-      - run: cat ~/.aws/credentials
+      - run: ls build
 
       - deploy:
           command: |
