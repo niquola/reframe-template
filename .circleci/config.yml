@@ -10,8 +10,8 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - << checksum "project.clj" >>
-            - cljs
+            - clj-1
+            - cljs-2
       - run: bin/lein deps
       - run: bin/lein with-profile prod cljsbuild once ui
       - save_cache:
@@ -19,7 +19,7 @@ jobs:
             - ~/target
             - /root/.m2
             - ~/.lein
-          key: cljs
+          key: cljs-2
       - save_cache:
           paths:
             - /root/.m2
@@ -28,6 +28,8 @@ jobs:
 
       - run: rm -rf build
       - run: bin/lein with-profile prod cljsbuild once ui
+      - run: cp resources/public/index.html build
+      - run: cp resources/public/icon.png build
 
       - deploy:
           command: |
