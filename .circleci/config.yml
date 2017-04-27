@@ -9,7 +9,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key:
+          keys:
             - << checksum "project.clj" >>
             - cljs
       - run: bin/lein deps
