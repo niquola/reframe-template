@@ -30,6 +30,8 @@ jobs:
       - run: bin/lein with-profile prod cljsbuild once ui
       - run: cp resources/public/index.html build
       - run: cp resources/public/icon.png build
+      - run: echo "2222222222222222222222222222"
+      - run: echo $AWS_ACCESS_KEY_ID
 
       - deploy:
           command: |
