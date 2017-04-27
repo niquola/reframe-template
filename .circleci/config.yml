@@ -30,8 +30,6 @@ jobs:
       - run: bin/lein with-profile prod cljsbuild once ui
       - run: cp resources/public/index.html build
       - run: cp resources/public/icon.png build
-      - run: export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-      - run: export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
 
       - run: cat ~/.aws/credentials
 
@@ -39,7 +37,7 @@ jobs:
           command: |
               if [ "${CIRCLE_BRANCH}" == "master" ]; then
                 apt-get update && apt-get install -y awscli
-                aws s3 cp --recursive build s3://cleo-poc-bucket
+                AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY aws s3 cp --recursive build s3://cleo-poc-bucket
               fi
 
       - store_artifacts:
