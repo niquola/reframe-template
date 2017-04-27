@@ -5,6 +5,7 @@
    [ui.styles :as styles]
    [re-frame.core :as rf]
    [ui.routes :refer [href]]
+   [ui.styles :as styles]
    [clojure.string :as str]))
 
 (rf/reg-sub-raw
@@ -14,38 +15,36 @@
 (defn current-page? [route key]
   (= (:match route) key))
 
-(defn toggle-button []
-  [:button.navbar-toggle.collapsed
-   {:type "button"}
-   [:span.sr-only "Toggle navigation"]
-   [:span.icon-bar]
-   [:span.icon-bar]
-   [:span.icon-bar]])
+(defn nav-item [route k path title]
+  [:li.nav-item {:class (when (current-page? @route k) "active")}
+   [:a.nav-link {:href (apply href path)} title]])
 
 (defn menu []
   (let [auth (rf/subscribe [:auth])
         route (rf/subscribe [:route-map/current-route])]
     (fn []
-      [:nav.navbar.navbar-default
-       [:div.container-fluid
-        [:div.navbar-header
-         [toggle-button]
-         [:a.navbar-brand {:href (href)} "EHR"]]
+      [:nav.navbar.navbar-toggleable-md.navbar-light.bg-faded
+       (styles/style [:nav.navbar {:border-bottom "1px solid #ddd"
+                                   :padding-bottom 0}
+                      [:li.nav-item {:border-bottom "3px solid transparent"}
+                       [:&.active {:border-color "#555"}]]
+                      [:.avatar {:width "20px"
+                                 :height "20px"
+                                 :margin "0 5px"
+                                 :border-radius "50%"}]])
+       [:div.container
+        [:a.navbar-brand {:href "#/"} "MyEHR"]
         [:div.collapse.navbar-collapse
-         [:ul.nav.navbar-nav
-          [:li {:class (when (current-page? @route :patients/index) "active")}
-           [:a {:href (href :patients)} "Patients"]]
-          [:li {:class (when (current-page? @route :patients/new) "active")}
-           [:a {:href (href :patients :new)} "New Patient"]]
-          [:li {:class (when (current-page? @route :database/index) "active")}
-           [:a {:href (href :db)} "db"]]]
-
-         [:ul.nav.navbar-nav.navbar-right
-          [:style ".avatar {width: 20px; height: 2opx; margin: 0 5px; border-radius: 50%;}"]
-          [:li [:a {:href (href :notifications)} "Notifications"]]
-          [:li [:a {:href (href :profile)}
-                (if-let [pic (:picture @auth)] [:img.avatar {:src pic}] "(*_*)")
-                (when-let [a @auth] (or (:nickname a) (:email a)))]]]]]])))
+         [:ul.nav.navbar-nav.mr-auto
+          [nav-item route :patients/index [:patients] "Patients"]
+          [nav-item route :patients/new [:patients :new] "New Patient"]
+          [nav-item route :database/index [:db] "Db"]]
+         [:ul.nav.navbar-nav.my-2.my-lg-0
+          [nav-item route :notifications/index [:notifications] "Notifications"]
+          [nav-item route :profile/index [:profile]
+           [:span
+            (if-let [pic (:picture @auth)] [:img.avatar {:src pic}] "(*_*)")
+            (when-let [a @auth] (or (:nickname a) (:email a)))]]]]]])))
 
 (defn layout [content]
   [:div.app

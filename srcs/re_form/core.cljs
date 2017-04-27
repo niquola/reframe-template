@@ -22,12 +22,23 @@
         (fn [props]
           [:input.form-control {:type "text" :value @sub  :on-change on-change}])))))
 
-(defn form [{path :path validate :validate :as opts} body]
-  (.log js/console "INIT form" opts)
-  (let [on-submit (fn [ev]
-                    (.log js/console "SUBMIT" opts)
-                    (.preventDefault ev)
-                    (when-let [f (:on-submit opts)] (f)))]
-    (fn []
-      [:form.form (merge (dissoc opts :validate :path) {:on-submit on-submit})
-       (into [:div body])])))
+(defn has-errors? [errors path]
+  (not (empty? (get-in @errors path))))
+
+(defn errors-hint [errors path]
+  (when-let [e (get-in @errors path)]
+    [:div.control-errors (str/join ";" e)]))
+
+(defn row [{errors :errors lbl :label base-path  :base-path path :path input :as :as opts}]
+  [:div.form-group
+   {:class (when (has-errors? errors path) "has-error")}
+   (when lbl [:label lbl])
+   [input {:type "text" :base-path base-path :path path}]
+
+   [errors-hint errors path]])
+
+(defn submit-btn [submit-fn title]
+  [:button.btn.btn-primary {:type "submit" :on-click submit-fn} title])
+
+(defn cancel-btn [submit-fn title]
+  [:button.btn.btn-default {:type "submit" :on-click submit-fn} title])

@@ -3,17 +3,11 @@
   (:require [reagent.core :as reagent]
             [re-frame.core :as rf]
             [ui.routes :refer [href]]
+            [ui.styles :as styles]
             [clojure.string :as str]
             [cljs.pprint :as pp]
             [re-form.core :as form]
             [clojure.string :as str]))
-
-(defn has-errors? [errors path]
-  (not (empty? (get-in @errors path))))
-
-(defn errors-hint [errors path]
-  (when-let [e (get-in @errors path)]
-    [:div.control-errors (str/join ";" e)]))
 
 (rf/reg-event-fx
  :patients/index
@@ -132,13 +126,20 @@
     (fn []
       [:div
        [:span "Current orgnanization" (pr-str @sub)]
-       [:style ".item {cursor: pointer; padding: 5px; border-bottom: 1px solid #ddd;} .item:hover {background-color: #f1f1f1;}"]
+
+       [styles/style
+        [:.item {:cursor "pointer"
+                 :padding (styles/px 5)
+                 :border-bottom (styles/color :border)}
+
+         [:&:hover {:background-color (styles/color :hover-background)
+                    :color (styles/color :hover-color)}]]]
+
        [:input.form-control {:placeholder "Search Organization"
                              :on-change (fn [ev] (rf/dispatch [:organization/search (.. ev -target -value)]))}]
        [:div.results
         (for [o @orgs]
-          [:div.item {:key (:name o)
-                 :on-click #(rf/dispatch [:re-form/change (into b-pth pth) o])}
+          [:div.item {:key (:name o) :on-click #(rf/dispatch [:re-form/change (into b-pth pth) o])}
            (:name o)])]])))
 
 (defn validate-telecom [tels]
@@ -159,9 +160,9 @@
        (doall
         (for [[idx tel] (map-indexed vector @sub)]
           [:div.telecom.row {:key (str idx)}
-           [:div.col-md-6
+           [:div.col-md-6 {:class (when (form/has-errors? errors [idx :system]) "has-error")}
             [form/input {:type "text" :placeholder "system" :base-path b-pth :path (into pth [idx :system])}]
-            (when-let [e (get-in @errors [idx :system])] [:div.control-errors (str/join ";" e)])]
+            [form/errors-hint errors [idx :system]]]
            [:div.col-md-6
             [form/input {:type "text" :placeholder "value" :base-path b-pth :path (into pth [idx :value])}]]]))])))
 
@@ -172,44 +173,41 @@
         save-fn #(rf/dispatch [:patient/save  base-path])
         cancel-fn #(rf/dispatch [:patient/reset base-path])
         errors (reaction (validate-pt @pt))]
+
     (fn [params]
       [:div.index.container
-       [:style ".control-errors { color: red; }"]
+
        [:h3 "Update Patient"]
+       [:div.form
+        [form/row {:path [:name 0 :given 0]
+                   :errors errors
+                   :label "Given"
+                   :base-path base-path
+                   :as form/input}]
 
+        [form/row {:path [:name 0 :family 0]
+                   :errors errors
+                   :label "Family"
+                   :base-path base-path
+                   :as form/input}]
 
-       [:div.form {}
-        [:div
-         ;; (when @errors [:div.alert (pr-str @errors )])
-         (let [path [:name 0 :given 0]]
-           [:div.form-group
-            {:class (when (has-errors? errors path) "has-error")}
-            [:label "Given"]
-            [form/input {:type "text" :base-path base-path :path path}]
-            [errors-hint errors path]])
+        ;; example of hand crafted row
+        ;; with custom control
+        (let [path [:organization]]
+          [:div.form-group
+           {:class (when (form/has-errors? errors path) "has-error")}
+           [:label "Organization"]
+           [lookup {:type "text" :base-path base-path :path path}]
+           [form/errors-hint errors path]])
 
-         (let [path [:name 0 :family 0]]
-           [:div.form-group
-            {:class (when (has-errors? errors path) "has-error")}
-            [:label "Family"]
-            [form/input {:type "text" :base-path base-path :path path}]
-            [errors-hint errors path]])
+        [telecom-form {:base-path base-path :path [:telecom]}]
 
-         (let [path [:organization]]
-           [:div.form-group
-            {:class (when (has-errors? errors path) "has-error")}
-            [:label "Organization"]
-            [lookup {:type "text" :base-path base-path :path path}]
-            [errors-hint errors path]])
+        [:div.form-group
+         [form/submit-btn save-fn "Save"]
+         " "
+         [form/cancel-btn cancel-fn "Save"]]
 
-         [telecom-form {:base-path base-path :path [:telecom]}]
-
-         [:div.form-group
-          [:button.btn.btn-primary {:type "submit" :on-click save-fn} "Save"]
-          " "
-          [:a.btn.btn-default {:on-click cancel-fn} "Cancel"]]
-
-         [show-data @pt]]]])))
+        [show-data @pt]]])))
 
 (defn edit-patient [params]
   (rf/dispatch [:patients/index])

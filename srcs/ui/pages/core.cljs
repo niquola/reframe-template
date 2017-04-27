@@ -10,11 +10,11 @@
 
 (defn index [params]
   (let [route @(rf/subscribe [:route-map/current-route])]
-    [:div.index
+    [:div.container
      [:h3 "Dashboard"]]))
 
 (defn notifications [params]
-  [:div.index
+  [:div.container
    [:h3 "Notifications"]])
 
 (def pages (merge {:core/index index

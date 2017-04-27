@@ -12,8 +12,8 @@
 (defn database [params]
   (let [db (rf/subscribe [:debug/db])]
     (fn []
-      [:div.index
-       [:h3 "User Profile"]
+      [:div.container
+       [:h3 "Database"]
        [:pre (.stringify js/JSON (clj->js @db) nil " ")]])))
 
 (def pages {:database/index database})
