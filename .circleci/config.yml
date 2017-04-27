@@ -13,16 +13,16 @@ jobs:
       - restore_cache:
           key: cljs
       - run: bin/lein deps
-      - save_cache:
-          paths:
-            - $HOME/.m2
-            - $HOME/.lein
-          key: << checksum "project.clj" >>
       - run: bin/lein with-profile prod cljsbuild once ui
       - save_cache:
           paths:
             - target
           key: cljs
+      - save_cache:
+          paths:
+            - $HOME/.m2
+            - $HOME/.lein
+          key: << checksum "project.clj" >>
       - store_artifacts:
           path: build
           destination: public
