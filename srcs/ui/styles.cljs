@@ -20,6 +20,6 @@
   (garden/css
    [:body
     [:nav {:margin-bottom (units/px 25)}]
-    [:.control-errors {:color (color :error)}]]))
+    [:.control-errors {:color (color :error) :font-size (px 12)}]]))
 
 

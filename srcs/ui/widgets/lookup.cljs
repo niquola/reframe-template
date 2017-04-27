@@ -39,13 +39,20 @@
  (fn [db _]
    (reaction (get @db :organization/search-results))))
 
+(rf/reg-event-fx
+ :organization/selection
+ (fn [{db :db} [_ path org]]
+   {:dispatch [:re-form/change path 
+               {:reference (str "Organization/" (:id org))
+                :text (:name org)}]
+    :db (assoc db :organization/search-results [])}))
+
 (defn lookup [{b-pth :base-path pth :path}]
   (let [orgs (rf/subscribe [:organization/search-results])
         sub (rf/subscribe [:re-form/data (into b-pth pth)])]
     (fn []
       [:div
-       [:b (:name @sub)]
-
+       [:b (:text @sub)]
        [styles/style
         [:.item {:cursor "pointer"
                  :padding (styles/px 5)
@@ -59,5 +66,5 @@
                              :on-change (fn [ev] (rf/dispatch [:organization/search (.. ev -target -value)]))}]
        [:div.results
         (for [o @orgs]
-          [:div.item {:key (:id o) :on-click #(rf/dispatch [:re-form/change (into b-pth pth) (select-keys o [:resourceType :id :name])])}
+          [:div.item {:key (:id o) :on-click #(rf/dispatch [:organization/selection (into b-pth pth) o])}
            (:name o)])]])))

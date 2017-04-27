@@ -104,26 +104,53 @@
 (defn validate-telecom [tels]
   (reduce
    (fn [acc [idx tel]]
-     (if (str/blank? (:system tel))
-       (assoc-in acc [idx :system] ["required"])
-       acc))
+     (cond-> acc
+       (str/blank? (:system tel))
+       (assoc-in [idx :system] ["required"])
+
+       (str/blank? (:value tel))
+       (assoc-in [idx :value] ["required"])
+
+       (not (contains? #{"fax" "email" "phone" "url" "sms" "pager"} (:system tel)) )
+       (assoc-in [idx :system] ["should be one of phone | fax | email | pager | url | sms | other"])
+
+       (not (contains? #{"temp" "work" "home" "old" "mobile"} (:use tel)) )
+       (assoc-in [idx :use] ["should be one of home | work | temp | old | mobile"])))
+
    {} (map-indexed vector tels)))
 
-(defn telecom-form [{:b-pth :base-path pth :path :as opts}]
+(defn telecom-form [{b-pth :base-path pth :path :as opts}]
   (let [add-telecom (fn [ev])
         sub (rf/subscribe [:re-form/data (into b-pth pth)])
+        base-path (into b-pth pth)
         errors (reaction (validate-telecom @sub))]
     (fn [opts]
       [:div.form-group
-       [:h3 "Telecom " [:button.btn.btn-primary {:on-click #(rf/dispatch [:re-form/change (into b-pth (into pth [(count @sub)])) {}])} "+"]]
+       [:h3 "Telecom "
+        [:button.btn.btn-primary
+         {:on-click #(rf/dispatch [:re-form/change (into b-pth (into pth [(count @sub)])) {}])}
+         (wgt/icon :plus)]]
        (doall
         (for [[idx tel] (map-indexed vector @sub)]
           [:div.telecom.row {:key (str idx)}
-           [:div.col-md-6 {:class (when (form/has-errors? errors [idx :system]) "has-error")}
-            [form/input {:type "text" :placeholder "system" :base-path b-pth :path (into pth [idx :system])}]
-            [form/errors-hint errors [idx :system]]]
-           [:div.col-md-6
-            [form/input {:type "text" :placeholder "value" :base-path b-pth :path (into pth [idx :value])}]]]))])))
+           [:div.col-md-4
+            [form/row {:path [idx :use]
+                       :errors errors
+                       :label "Use"
+                       :base-path base-path
+                       :as form/input}]]
+           [:div.col-md-4
+            [form/row {:path [idx :system]
+                       :errors errors
+                       :label "System"
+                       :base-path base-path
+                       :as form/input}]]
+           [:div.col-md-4
+            [form/row {:path [idx :value]
+                       :errors errors
+                       :label "Value"
+                       :base-path base-path
+                       :as form/input}]]]))])))
 
 (defn patient-form [base-path]
   (let [pt (rf/subscribe [:db/by-path base-path])
@@ -137,17 +164,20 @@
       [:div.index.container
        [:h3 "Update Patient"]
        [:div.form
-        [form/row {:path [:name 0 :given 0]
-                   :errors errors
-                   :label "Given"
-                   :base-path base-path
-                   :as form/input}]
+        [:div.row 
+         [:div.col-md-6
+          [form/row {:path [:name 0 :given 0]
+                     :errors errors
+                     :label "Given"
+                     :base-path base-path
+                     :as form/input}]]
 
-        [form/row {:path [:name 0 :family 0]
-                   :errors errors
-                   :label "Family"
-                   :base-path base-path
-                   :as form/input}]
+         [:div.col-md-6
+          [form/row {:path [:name 0 :family 0]
+                     :errors errors
+                     :label "Family"
+                     :base-path base-path
+                     :as form/input}]]]
 
         ;; example of hand crafted row
         ;; with custom control
@@ -158,6 +188,7 @@
            [lookup/lookup {:type "text" :base-path base-path :path path}]
            [form/errors-hint errors path]])
 
+        [:hr]
         [telecom-form {:base-path base-path :path [:telecom]}]
 
         [:hr]
