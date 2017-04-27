@@ -1,0 +1,22 @@
+version: 2
+jobs:
+  build:
+    working_directory: /var/cleo-poc
+    docker:
+      - image: openjdk:8
+    environment:
+      LEIN_ROOT=nbd
+    steps:
+      - checkout
+      - restore_cache:
+          key: << checksum "project.clj" >>
+      - run: bin/lein deps
+      - save_cache:
+          paths:
+            - $HOME/.m2
+            - $HOME/.lein
+          key: << checksum "project.clj" >>
+      - run: bin/lein with-profile prod cljsbuild once ui
+      - store_artifacts:
+          path: build
+          destination: public
