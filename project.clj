@@ -70,9 +70,12 @@
                            ;; :foreign-libs []
 
                            ;; :externs []
+                           ;; :externs []
+
                            }}}}}
 
              :prod {:cljsbuild
+
                     {:builds
                      {:ui {:source-paths ["srcs" "env/prod/cljs"]
                            :verbose true
