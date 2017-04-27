@@ -3,6 +3,8 @@
   (:require [reagent.core :as reagent]
             [re-frame.core :as rf]
             [ui.routes :refer [href]]
+            [ui.widgets :as wgt]
+            [ui.widgets.lookup :as lookup]
             [ui.styles :as styles]
             [clojure.string :as str]
             [cljs.pprint :as pp]
@@ -61,8 +63,6 @@
  (fn [db [_ pt-id]]
    (reaction (get-in @db [:Patient pt-id]))))
 
-(defn show-data [data]
-  [:pre (.stringify js/JSON (clj->js data) nil " ")])
 
 (defn show-patient [params]
   (rf/dispatch [:fhir/read {:resourceType "Patient" :id (:pt/id params)}])
@@ -70,7 +70,7 @@
     (fn [params]
       [:div.index.container
        [:h3 "Patient " [:a.btn.btn-default {:href (href :patients (:id @pt) :edit)} "Edit"]]
-       [show-data @pt]])))
+       [wgt/pp @pt]])))
 
 (rf/reg-event-db
  :patient/save
@@ -79,23 +79,19 @@
 
 (rf/reg-event-fx
  :patient/save
- (fn [coef [_ path]]
-   {:dispatch [:fhir/update {:path path
-                             :success {:event :patient/saved
-                                       :path path}}]}))
+ (fn [{db :db} [_ path]]
+   {:dispatch [:fhir/save   {:resource (get-in db path)
+                             :success  {:event :patient/saved}}]}))
 
 (rf/reg-event-fx
  :patient/saved
  (fn [coef [_ {path :path}]]
-   (.log js/console "Saved")
    {:route-map/redirect (href :patients)}))
 
 (rf/reg-event-fx
- :patient/reset
+ :patient/cancel
  (fn [coef [_ path]]
-   (.log js/console "Cancel" path)
-   {:dispatch [:fhir/reset path]
-    :route-map/redirect (href :patients)}))
+   {:route-map/redirect (href :patients)}))
 
 (defn validate-pt [pt]
   (if (and (str/blank? (get-in pt [:name 0 :family 0]))
@@ -104,43 +100,6 @@
              :family [["Given or Family is required"]]}]}
     {}))
 
-(rf/reg-event-fx
- :organization/search
- (fn [coef [_ query]]
-   (.log js/console "Search org" query)
-   {:db (assoc (:db coef) :organization/search-results
-               (if (str/blank? query) []
-                   [{:name query}
-                    {:name (str query "o")}
-                    {:name (str query "oo")}
-                    {:name (str query "ooo")}]))}))
-
-(rf/reg-sub-raw
- :organization/search-results
- (fn [db _]
-   (reaction (get @db :organization/search-results))))
-
-(defn lookup [{b-pth :base-path pth :path}]
-  (let [orgs (rf/subscribe [:organization/search-results])
-        sub (rf/subscribe [:re-form/data (into b-pth pth)])]
-    (fn []
-      [:div
-       [:span "Current orgnanization" (pr-str @sub)]
-
-       [styles/style
-        [:.item {:cursor "pointer"
-                 :padding (styles/px 5)
-                 :border-bottom (styles/color :border)}
-
-         [:&:hover {:background-color (styles/color :hover-background)
-                    :color (styles/color :hover-color)}]]]
-
-       [:input.form-control {:placeholder "Search Organization"
-                             :on-change (fn [ev] (rf/dispatch [:organization/search (.. ev -target -value)]))}]
-       [:div.results
-        (for [o @orgs]
-          [:div.item {:key (:name o) :on-click #(rf/dispatch [:re-form/change (into b-pth pth) o])}
-           (:name o)])]])))
 
 (defn validate-telecom [tels]
   (reduce
@@ -166,17 +125,16 @@
            [:div.col-md-6
             [form/input {:type "text" :placeholder "value" :base-path b-pth :path (into pth [idx :value])}]]]))])))
 
-
-(defn patient-form [pt-id]
-  (let [pt (rf/subscribe [:patients/show pt-id])
-        base-path [:Patient pt-id]
+(defn patient-form [base-path]
+  (let [pt (rf/subscribe [:db/by-path base-path])
         save-fn #(rf/dispatch [:patient/save  base-path])
-        cancel-fn #(rf/dispatch [:patient/reset base-path])
-        errors (reaction (validate-pt @pt))]
+        cancel-fn #(rf/dispatch [:patient/cancel base-path])
+        errors (reaction
+                (.log js/console "validate" @pt)
+                (validate-pt @pt))]
 
     (fn [params]
       [:div.index.container
-
        [:h3 "Update Patient"]
        [:div.form
         [form/row {:path [:name 0 :given 0]
@@ -197,37 +155,35 @@
           [:div.form-group
            {:class (when (form/has-errors? errors path) "has-error")}
            [:label "Organization"]
-           [lookup {:type "text" :base-path base-path :path path}]
+           [lookup/lookup {:type "text" :base-path base-path :path path}]
            [form/errors-hint errors path]])
 
         [telecom-form {:base-path base-path :path [:telecom]}]
 
+        [:hr]
         [:div.form-group
          [form/submit-btn save-fn "Save"]
          " "
-         [form/cancel-btn cancel-fn "Save"]]
+         [form/cancel-btn cancel-fn "Cancel"]]
 
-        [show-data @pt]]])))
+        [:div.debug
+         [styles/style [:.debug {:background-color "#f1f1f1" :padding "10px" :border "1px solid #ddd"}]]
+         [:b (pr-str base-path)]
+         [wgt/pp @pt]]]])))
 
-(defn edit-patient [params]
-  (rf/dispatch [:patients/index])
-  (rf/dispatch [:fhir/read {:resourceType "Patient" :id (:pt/id params)}])
-  (fn [] [patient-form (:pt/id params)]))
-
-(rf/reg-event-db
- :patients/init
- (fn [db [_ pt]]
-   (assoc-in db [:Patient (:id pt)] pt)))
+(defn edit-patient [{pid :pt/id}]
+  (let [path [:form :Patient pid]]
+    (rf/dispatch [:db/write path {}])
+    (rf/dispatch [:fhir/read {:resourceType "Patient"
+                              :id pid
+                              :into path}])
+    (fn [] [patient-form path])))
 
 (defn new-patient [params]
-  (let [tmp-id (str (gensym))]
-    (rf/dispatch [:patients/init {:id tmp-id
-                                  :temporal true
-                                  :telecom []
-                                  :resourceType "Patient"
-                                  :name [{:given [] :family []}]}])
+  (let [path [:form :Patient :new]]
+    (rf/dispatch [:db/write path {:resourceType "Patient"}])
     (fn [params]
-      (fn [] [patient-form tmp-id]))))
+      [patient-form path])))
 
 (def pages {:patients/index index
             :patients/new new-patient

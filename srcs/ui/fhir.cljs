@@ -16,7 +16,18 @@
 
 (rf/reg-event-fx
  :fhir/read
- (fn [coef args] coef))
+ (fn [coef [_ args]]
+   (.log js/console "READ" args)
+   {:json/fetch {:uri (str base-url "/" (:resourceType args) "/" (:id args))
+                 :success (assoc args :event :fhir/read-results)}}))
+
+(rf/reg-event-db
+ :fhir/read-results
+ (fn [db [_ args]]
+   (let [res (:data args)]
+     (if-let [path (:into args)]
+       (assoc-in db path res)
+       (assoc-in db [(keyword (:resourceType res)) (:id res)] res)))))
 
 (rf/reg-event-db
  :fhir/reset
@@ -28,21 +39,25 @@
    (assoc-in db (into [:original] path) (get-in db path))))
 
 (rf/reg-event-fx
- :fhir/update
- (fn [{db :db} [_ {path :path succ :success :as args}]]
-   (.log js/console "update" args)
-   (when-let [res (get-in db path)]
-     {:json/fetch {:uri (str base-url "/" (:resourceType res) "/" (:id res))
-                   :method "put"
-                   :body res
-                   :success {:event :fhir/updated
-                             :path path
-                             :success succ}}})))
+ :fhir/save
+ (fn [{db :db} [_ {res :resource succ :success :as args}]]
+   (when res
+     (if-let [id (:id res)]
+       {:json/fetch {:uri (str base-url "/" (:resourceType res) "/" (:id res))
+                     :method "put"
+                     :body res
+                     :success {:event :fhir/updated
+                               :success succ}}}
+       {:json/fetch {:uri (str base-url "/" (:resourceType res))
+                     :method "post"
+                     :body res
+                     :success {:event :fhir/saved
+                               :success succ}}}))))
 
 (rf/reg-event-fx
- :fhir/updated
- (fn [{db :db} [_ {succ :success :as args}]]
-   {:dispatch [(:event succ) succ]}))
+ :fhir/saved
+ (fn [{db :db} [_ {succ :success data :data :as args}]]
+   {:dispatch [(:event succ) (assoc succ :resource data)]}))
 
 (rf/reg-event-db
  :fhir/search-results

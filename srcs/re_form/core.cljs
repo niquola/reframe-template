@@ -4,10 +4,20 @@
             [re-frame.core :as rf]
             [clojure.string :as str]))
 
+(defn insert-by-path [m [k & ks :as path] value]
+  (if ks
+    (if (int? k)
+      (assoc (or m []) k (insert-by-path (get m k) ks value))
+      (assoc (or m {}) k (insert-by-path (get m k) ks value)))
+    (if (int? k)
+      (assoc (or m []) k value)
+      (assoc (or m {}) k value))))
+
+;; TODO: use db/write
 (rf/reg-event-db
  :re-form/change
  (fn [db [_ path value]]
-   (assoc-in db path value)))
+   (insert-by-path db path value)))
 
 (rf/reg-sub-raw
  :re-form/data
@@ -41,4 +51,4 @@
   [:button.btn.btn-primary {:type "submit" :on-click submit-fn} title])
 
 (defn cancel-btn [submit-fn title]
-  [:button.btn.btn-default {:type "submit" :on-click submit-fn} title])
+  [:button.btn.btn-secondary {:type "submit" :on-click submit-fn} title])

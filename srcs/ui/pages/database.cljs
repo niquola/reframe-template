@@ -1,8 +1,10 @@
 (ns ui.pages.database
-  (:require-macros [reagent.ratom :refer [reaction]])
+  (:require-macros [reagent.ratom :refer [reaction]]
+                   [cljs.pprint :as pp])
   (:require [reagent.core :as reagent]
             [re-frame.core :as rf]
             [ui.routes :refer [href]]
+            [ui.widgets :as wgt]
             [clojure.string :as str]))
 
 (rf/reg-sub
@@ -14,6 +16,6 @@
     (fn []
       [:div.container
        [:h3 "Database"]
-       [:pre (.stringify js/JSON (clj->js @db) nil " ")]])))
+       [wgt/pp @db]])))
 
 (def pages {:database/index database})

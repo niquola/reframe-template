@@ -6,6 +6,7 @@
    [re-frame.core :as rf]
    [ui.routes :refer [href]]
    [ui.styles :as styles]
+   [ui.widgets :as wgt]
    [clojure.string :as str]))
 
 (rf/reg-sub-raw
@@ -37,10 +38,10 @@
         [:div.collapse.navbar-collapse
          [:ul.nav.navbar-nav.mr-auto
           [nav-item route :patients/index [:patients] "Patients"]
-          [nav-item route :patients/new [:patients :new] "New Patient"]
-          [nav-item route :database/index [:db] "Db"]]
+          [nav-item route :patients/new [:patients :new] "New Patient"]]
          [:ul.nav.navbar-nav.my-2.my-lg-0
-          [nav-item route :notifications/index [:notifications] "Notifications"]
+          [nav-item route :core/notifications [:notifications] (wgt/icon :bell)]
+          [nav-item route :database/index [:db] (wgt/icon :database)]
           [nav-item route :profile/index [:profile]
            [:span
             (if-let [pic (:picture @auth)] [:img.avatar {:src pic}] "(*_*)")
@@ -50,4 +51,4 @@
   [:div.app
    [:style styles/basic-style]
    [menu]
-   [:div.container-fluid content]])
+   content])
