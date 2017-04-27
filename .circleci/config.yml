@@ -17,12 +17,12 @@ jobs:
       - save_cache:
           paths:
             - ~/target
-            - ~/.m2
+            - /root/.m2
             - ~/.lein
           key: cljs
       - save_cache:
           paths:
-            - $HOME/.m2
+            - /root/.m2
             - $HOME/.lein
           key: << checksum "project.clj" >>
       - store_artifacts:
