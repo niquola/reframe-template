@@ -25,6 +25,16 @@ jobs:
             - /root/.m2
             - $HOME/.lein
           key: << checksum "project.clj" >>
+
+      - run: rm -rf build
+      - run: bin/lein with-profile prod cljsbuild once ui
+
+      - deploy:
+          command: |
+              if [ "${CIRCLE_BRANCH}" == "master" ]; then
+                apt-get update && apt-get install -y awscli
+                aws s3 cp --recursive build s3://cleo-poc-bucket
+              fi
+
       - store_artifacts:
-          path: build
-          destination: public
+          path: builid
