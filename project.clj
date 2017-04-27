@@ -27,7 +27,7 @@
    [:cljsbuild :builds :app :compiler :output-dir]
    [:cljsbuild :builds :app :compiler :output-to]]
 
-  :source-paths ["srcs" "srcc"]
+  :source-paths ["srcc"]
   :resource-paths ["resources"]
 
   :figwheel
@@ -75,7 +75,7 @@
              :prod {:source-paths ["src/cljs" "src/clj"]
                     :cljsbuild
                     {:builds
-                     {:ui {:source-paths ["src/cljs" "src/clj" "env/prod/cljs"]
+                     {:ui {:source-paths ["srcs" "env/prod/cljs"]
                            :compiler
                            {:main "ui.prod"
                             ;; :foreign-libs [] 
