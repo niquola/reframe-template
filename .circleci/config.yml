@@ -10,7 +10,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - << checksum "project.clj" >>
+            - clj-1
             - cljs-2
       - run: bin/lein deps
       - run: bin/lein with-profile prod cljsbuild once ui
@@ -24,7 +24,7 @@ jobs:
           paths:
             - /root/.m2
             - $HOME/.lein
-          key: << checksum "project.clj" >>
+          key: clj-1
       - store_artifacts:
           path: build
           destination: public
