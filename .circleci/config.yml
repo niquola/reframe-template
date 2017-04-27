@@ -28,7 +28,6 @@ jobs:
 
       - run: cp resources/public/index.html build
       - run: cp resources/public/icon.png build
-      - run: ls build
 
       - deploy:
           command: |
