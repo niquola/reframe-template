@@ -5,6 +5,7 @@
 (def routes {:. :core/index
              "profile"  {:. :user/profile}
              "notifications" {:. :core/notifications}
+             "db" {:. :database/index}
              "patients" {:. :patients/index
                          "new" {:. :patients/new}
                          [:pt/id]  {:. :patients/show

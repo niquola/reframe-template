@@ -4,6 +4,7 @@
    [reagent.core :as reagent]
    [ui.pages.patients :as patients]
    [ui.pages.user :as user]
+   [ui.pages.database :as database]
    [re-frame.core :as rf]
    [clojure.string :as str]))
 
@@ -19,4 +20,5 @@
 (def pages (merge {:core/index index
                    :core/notifications notifications}
                   patients/pages
+                  database/pages
                   user/pages))

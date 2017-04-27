@@ -11,6 +11,9 @@
    [frames.cookeis :as cookies]
    [frames.openid :as openid]
    [frames.redirect :as redirect]
+
+   [ui.db]
+
    [ui.pages.core :as pages]
    [ui.routes :as routes]
    [ui.layout :as layout]

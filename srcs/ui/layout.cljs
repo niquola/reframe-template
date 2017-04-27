@@ -11,35 +11,41 @@
  :auth
  (fn [db _] (reaction (:auth @db))))
 
+(defn current-page? [route key]
+  (= (:match route) key))
+
+(defn toggle-button []
+  [:button.navbar-toggle.collapsed
+   {:type "button"}
+   [:span.sr-only "Toggle navigation"]
+   [:span.icon-bar]
+   [:span.icon-bar]
+   [:span.icon-bar]])
+
 (defn menu []
-  (let [auth (rf/subscribe [:auth])]
+  (let [auth (rf/subscribe [:auth])
+        route (rf/subscribe [:route-map/current-route])]
     (fn []
       [:nav.navbar.navbar-default
        [:div.container-fluid
         [:div.navbar-header
-         [:button.navbar-toggle.collapsed
-          {:type "button"}
-          [:span.sr-only "Toggle navigation"]
-          [:span.icon-bar]
-          [:span.icon-bar]
-          [:span.icon-bar]]
-         [:a.navbar-brand {:href "#/"} "Brand"]]
+         [toggle-button]
+         [:a.navbar-brand {:href (href)} "EHR"]]
         [:div.collapse.navbar-collapse
          [:ul.nav.navbar-nav
-          [:li.active [:a {:href (href :patients)} "Patients" [:span.sr-only "(current)"]]]
-          [:li [:a {:href (href :patients :new)} "New Patient"]]]
-         #_[:form.navbar-form.navbar-left
-            [:div.form-group
-             [:input.form-control {:placeholder "Search", :type "text"}]]
-            [:button.btn.btn-default {:type "submit"} "Submit"]]
+          [:li {:class (when (current-page? @route :patients/index) "active")}
+           [:a {:href (href :patients)} "Patients"]]
+          [:li {:class (when (current-page? @route :patients/new) "active")}
+           [:a {:href (href :patients :new)} "New Patient"]]
+          [:li {:class (when (current-page? @route :database/index) "active")}
+           [:a {:href (href :db)} "db"]]]
+
          [:ul.nav.navbar-nav.navbar-right
           [:style ".avatar {width: 20px; height: 2opx; margin: 0 5px; border-radius: 50%;}"]
           [:li [:a {:href (href :notifications)} "Notifications"]]
           [:li [:a {:href (href :profile)}
                 (if-let [pic (:picture @auth)] [:img.avatar {:src pic}] "(*_*)")
-                (when-let [a @auth] (or (:nickname a) (:email a)))]]]]]]))
-
-  )
+                (when-let [a @auth] (or (:nickname a) (:email a)))]]]]]])))
 
 (defn layout [content]
   [:div.app

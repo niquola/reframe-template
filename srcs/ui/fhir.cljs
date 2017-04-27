@@ -16,13 +16,11 @@
 
 (rf/reg-event-fx
  :fhir/read
- (fn [coef args]
-   coef))
+ (fn [coef args] coef))
 
 (rf/reg-event-db
  :fhir/reset
- (fn [db [_ path]]
-   (assoc-in db path (get-in db (into [:original] path)))))
+ (fn [db [_ path]] (assoc-in db path (get-in db (into [:original] path)))))
 
 (rf/reg-event-db
  :fhir/commit
@@ -44,13 +42,11 @@
 (rf/reg-event-fx
  :fhir/updated
  (fn [{db :db} [_ {succ :success :as args}]]
-   (.log js/console "updated" args)
    {:dispatch [(:event succ) succ]}))
 
 (rf/reg-event-db
  :fhir/search-results
  (fn [db [_ {rt :resourceType bundle :data :as args}]]
-   (.log js/console "FHIR loaded" args bundle)
    (let [idx (reduce (fn [acc res]
                        (assoc acc (:id res) res)) {}
                      (map :resource (:entry bundle)))]

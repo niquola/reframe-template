@@ -8,6 +8,12 @@
             [re-form.core :as form]
             [clojure.string :as str]))
 
+(defn has-errors? [errors path]
+  (not (empty? (get-in @errors path))))
+
+(defn errors-hint [errors path]
+  (when-let [e (get-in @errors path)]
+    [:div.control-errors (str/join ";" e)]))
 
 (rf/reg-event-fx
  :patients/index
@@ -56,11 +62,13 @@
             [:td (:birthDate pt)]
             [:td (:gender pt)]])]]])))
 
-
 (rf/reg-sub-raw
  :patients/show
  (fn [db [_ pt-id]]
    (reaction (get-in @db [:Patient pt-id]))))
+
+(defn show-data [data]
+  [:pre (.stringify js/JSON (clj->js data) nil " ")])
 
 (defn show-patient [params]
   (rf/dispatch [:fhir/read {:resourceType "Patient" :id (:pt/id params)}])
@@ -68,7 +76,7 @@
     (fn [params]
       [:div.index.container
        [:h3 "Patient " [:a.btn.btn-default {:href (href :patients (:id @pt) :edit)} "Edit"]]
-       [:pre (.stringify js/JSON (clj->js @pt) nil " ")]])))
+       [show-data @pt]])))
 
 (rf/reg-event-db
  :patient/save
@@ -157,6 +165,7 @@
            [:div.col-md-6
             [form/input {:type "text" :placeholder "value" :base-path b-pth :path (into pth [idx :value])}]]]))])))
 
+
 (defn patient-form [pt-id]
   (let [pt (rf/subscribe [:patients/show pt-id])
         base-path [:Patient pt-id]
@@ -168,42 +177,39 @@
        [:style ".control-errors { color: red; }"]
        [:h3 "Update Patient"]
 
-       [:pre (pr-str @pt)]
 
        [:div.form {}
         [:div
          ;; (when @errors [:div.alert (pr-str @errors )])
-         [:div.form-group
-          {:class (when-not (empty? (get-in @errors [:name 0 :given 0])) "has-error")}
-          [:label "Given"]
-          [form/input {:type "text" :base-path base-path :path [:name 0 :given 0]}]
+         (let [path [:name 0 :given 0]]
+           [:div.form-group
+            {:class (when (has-errors? errors path) "has-error")}
+            [:label "Given"]
+            [form/input {:type "text" :base-path base-path :path path}]
+            [errors-hint errors path]])
 
-          (when-let [e (get-in @errors [:name 0 :given 0])] [:div.control-errors (str/join ";" e)])]
+         (let [path [:name 0 :family 0]]
+           [:div.form-group
+            {:class (when (has-errors? errors path) "has-error")}
+            [:label "Family"]
+            [form/input {:type "text" :base-path base-path :path path}]
+            [errors-hint errors path]])
 
-         [:div.form-group
-          {:class (when-not (empty? (get-in @errors [:name 0 :family 0])) "has-error")}
-          [:label "Family"]
-          [form/input {:type "text"
-                       :base-path base-path
-                       :path [:name 0 :family 0]}]
-
-          (when-let [e (get-in @errors [:name 0 :family 0])] [:div.control-errors (str/join ";" e)])]
-
-         [:div.form-group
-          {:class (when-not (empty? (get-in @errors [:name 0 :family 0])) "has-error")}
-          [:label "Organization"]
-          [lookup {:type "text"
-                   :base-path base-path
-                   :path [:organization]}]
-
-          (when-let [e (get-in @errors [:organization])] [:div.control-errors (str/join ";" e)])]
+         (let [path [:organization]]
+           [:div.form-group
+            {:class (when (has-errors? errors path) "has-error")}
+            [:label "Organization"]
+            [lookup {:type "text" :base-path base-path :path path}]
+            [errors-hint errors path]])
 
          [telecom-form {:base-path base-path :path [:telecom]}]
 
          [:div.form-group
           [:button.btn.btn-primary {:type "submit" :on-click save-fn} "Save"]
           " "
-          [:a.btn.btn-default {:on-click cancel-fn} "Cancel"]]]]])))
+          [:a.btn.btn-default {:on-click cancel-fn} "Cancel"]]
+
+         [show-data @pt]]]])))
 
 (defn edit-patient [params]
   (rf/dispatch [:patients/index])

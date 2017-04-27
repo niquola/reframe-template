@@ -26,3 +26,8 @@
  ::set
  (fn [{k :key v :value :as opts}]
    (set-cookie k v)))
+
+(rf/reg-fx
+ ::remove
+ (fn [{k :key}]
+   (.remove goog.net.cookies (name k))))
