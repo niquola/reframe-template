@@ -9,14 +9,16 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: << checksum "project.clj" >>
-      - restore_cache:
-          key: cljs
+          key:
+            - << checksum "project.clj" >>
+            - cljs
       - run: bin/lein deps
       - run: bin/lein with-profile prod cljsbuild once ui
       - save_cache:
           paths:
-            - target
+            - ~/target
+            - ~/.m2
+            - ~/.lein
           key: cljs
       - save_cache:
           paths:
