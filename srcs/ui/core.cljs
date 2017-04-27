@@ -8,7 +8,7 @@
    [re-frisk.core :refer [enable-re-frisk!]]
    [frames.routing]
    [frames.xhr]
-   [frames.cookeis :as cookies]
+   [frames.cookies :as cookies]
    [frames.openid :as openid]
    [frames.redirect :as redirect]
 

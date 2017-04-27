@@ -1,7 +1,6 @@
-(ns frames.cookeis
+(ns frames.cookies
   (:refer-clojure :exclude [get set!])
   (:require [goog.net.cookies :as gcookies]
-            [cljs.core.async :as a]
             [re-frame.core :as rf]
             [cljs.reader :as reader]))
 
