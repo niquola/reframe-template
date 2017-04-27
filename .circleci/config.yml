@@ -16,7 +16,8 @@ jobs:
             - $HOME/.m2
             - $HOME/.lein
           key: << checksum "project.clj" >>
+      - run: rm -rf build
       - run: bin/lein with-profile prod cljsbuild once ui
       - store_artifacts:
-          path: build
+          path: builid
           destination: public
