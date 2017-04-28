@@ -47,8 +47,38 @@
             (if-let [pic (:picture @auth)] [:img.avatar {:src pic}] "(*_*)")
             (when-let [a @auth] (or (:nickname a) (:email a)))]]]]]])))
 
+(defn human-name [n]
+  (str/join " "
+            (concat
+             (or (:given (first n)) [])
+             (or (:family (first n)) []))))
+
+(defn badge [pt]
+  [:div
+   [styles/style
+    [:.avatar [:i {:font-size "40px" :color "gray"}]]]
+   [:div.avatar [wgt/icon :user-circle]]
+   [:br]
+   [:b (human-name (:name pt))]])
+
 (defn layout [content]
-  [:div.app
-   [:style styles/basic-style]
-   [menu]
-   content])
+  (let [current-pt (rf/subscribe [:patients/current-patient])]
+    (fn []
+      [:div.app
+       [:style styles/basic-style]
+       [styles/style [:.secondary-nav {:border-left "1px solid #ddd"}]]
+       [menu]
+       (if-let [pt @current-pt]
+         [:div.container
+          [:div.row
+           [:div.col-md-9 content]
+           [:div.col-md-3.secondary-nav
+            [badge pt]
+            [:hr]
+            [:ul.nav.flex-column
+             [:li.nav-item
+              [:a.nav-link {:href (href :patients (:id pt) :edit)} "Demographics"]]
+             [:li.nav-item
+              [:a.nav-link {:href (href :patients (:id pt) :insurances)} "Insurances"]]
+             ]]]]
+         [:div.container content])])))

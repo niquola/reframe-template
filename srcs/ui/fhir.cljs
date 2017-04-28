@@ -31,15 +31,6 @@
        (assoc-in db path res)
        (assoc-in db [(keyword (:resourceType res)) (:id res)] res)))))
 
-(rf/reg-event-db
- :fhir/reset
- (fn [db [_ path]] (assoc-in db path (get-in db (into [:original] path)))))
-
-(rf/reg-event-db
- :fhir/commit
- (fn [db [_ path]]
-   (assoc-in db (into [:original] path) (get-in db path))))
-
 (rf/reg-event-fx
  :fhir/save
  (fn [{db :db} [_ {res :resource succ :success :as args}]]
@@ -48,13 +39,11 @@
        {:json/fetch {:uri (str base-url "/" (:resourceType res) "/" (:id res))
                      :method "put"
                      :body res
-                     :success {:event :fhir/updated
-                               :success succ}}}
+                     :success {:event :fhir/saved :success succ}}}
        {:json/fetch {:uri (str base-url "/" (:resourceType res))
                      :method "post"
                      :body res
-                     :success {:event :fhir/saved
-                               :success succ}}}))))
+                     :success {:event :fhir/saved :success succ}}}))))
 
 (rf/reg-event-fx
  :fhir/saved

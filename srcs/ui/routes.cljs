@@ -8,7 +8,8 @@
              "db" {:. :database/index}
              "patients" {:. :patients/index
                          "new" {:. :patients/new}
-                         [:pt/id]  {:. :patients/show
+                         [:pt/id]  {:context :patients/current-patient
+                                    :. :patients/show
                                     "edit" {:. :patients/edit}}}})
 
 (defn href [& parts]

@@ -36,7 +36,7 @@
   (rf/dispatch [:patients/index])
   (let [patients (rf/subscribe [:patients/index])]
     (fn [params]
-      [:div.index.container
+      [:div.index.container-fluid
        [:h3 "Patient list"]
        [:input.form-control {:type "text"
                              :placeholder "Search Patient"
@@ -52,7 +52,7 @@
         [:tbody
          (for [pt @patients]
            [:tr {:key (:id pt)}
-            [:td [:a {:href (href :patients (:id pt) :edit)}
+            [:td [:a {:href (href :patients (:id pt))}
                   (:name pt)
                   (when (:temporal pt) "(local)")]]
             [:td (:birthDate pt)]
@@ -63,18 +63,24 @@
  (fn [db [_ pt-id]]
    (reaction (get-in @db [:Patient pt-id]))))
 
+(rf/reg-sub-raw
+ :patients/current-patient
+ (fn [db _]
+   (reaction (get @db :current-patient))))
+
+(rf/reg-event-fx
+ :patients/current-patient
+ (fn [coef [_ phase params]]
+   (if (= :init phase)
+     {:dispatch  [:fhir/read {:resourceType "Patient" :id (:pt/id params) :into [:current-patient]}]}
+     {:dispatch  [:db/write [:current-patient] nil]})))
 
 (defn show-patient [params]
-  (rf/dispatch [:fhir/read {:resourceType "Patient" :id (:pt/id params)}])
-  (let [pt (rf/subscribe [:patients/show (:pt/id params)])]
+  (let [pt (rf/subscribe [:patients/current-patient])]
     (fn [params]
-      [:div.index.container
+      [:div.index.container-fluid
        [:h3 "Patient " [:a.btn.btn-default {:href (href :patients (:id @pt) :edit)} "Edit"]]
        [wgt/pp @pt]])))
-
-(rf/reg-event-db
- :patient/save
- (fn [db [_ pt-id path value]] db))
 
 
 (rf/reg-event-fx
@@ -206,8 +212,7 @@
   (let [path [:form :Patient pid]]
     (rf/dispatch [:db/write path {}])
     (rf/dispatch [:fhir/read {:resourceType "Patient"
-                              :id pid
-                              :into path}])
+                              :id pid :into path}])
     (fn [] [patient-form path])))
 
 (defn new-patient [params]

@@ -3,6 +3,7 @@
   (:require [reagent.core :as reagent]
             [re-frame.core :as rf]
             [clojure.string :as str]
+            [clojure.set :as set]
             [route-map.core :as route-map]))
 
 (defn dispatch-routes [_]
@@ -13,12 +14,28 @@
  :route-map/current-route
  (fn [db _] (reaction (:route-map/current-route @db))))
 
-(rf/reg-event-db
+(defn contexts-diff [old-contexts new-contexts params old-params]
+  (let [n-idx (into #{} new-contexts)
+        o-idx (into #{} old-contexts)
+        to-dispose (set/difference o-idx n-idx)]
+    (concat
+     (mapv (fn [x] [x :init params]) new-contexts)
+     (mapv (fn [x] [x :deinit old-params]) to-dispose))))
+
+(rf/reg-event-fx
  :fragment-changed
- (fn [db [k fragment]]
+ (fn [{db :db} [k fragment]]
    (if-let [route (route-map/match [:. (str/replace fragment #"^#" "")] (:route-map/routes db))]
-     (assoc db :fragment fragment :route-map/current-route route)
-     (assoc db :fragment fragment :route-map/current-route nil))))
+     (let [contexts (->> (:parents route) (mapv :context) (filterv identity))
+           dispose-context (or  [])]
+       {:db (assoc db :fragment fragment
+                   :route/context contexts
+                   :route-map/current-route route)
+        :dispatch-n (contexts-diff (:route/context db)
+                                   contexts
+                                   (:params route)
+                                   (get-in db [:route-map/current-route :params]))})
+     {:db (assoc db :fragment fragment :route-map/current-route nil)})))
 
 (rf/reg-event-fx
  :route-map/init
