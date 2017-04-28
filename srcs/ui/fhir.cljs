@@ -11,8 +11,8 @@
  :fhir/search
  (fn [coef [_ args]]
    {:json/fetch {:uri (str base-url "/" (:resourceType args))
-                 :params (if (and (:query args) (not (str/blank? (:query args))))
-                           {:name (:query args)} {})
+                 :params (if (map?  (:query args))
+                           (:query args) {})
                  :success {:event :fhir/search-results
                            :resourceType (:resourceType args)}}}))
 

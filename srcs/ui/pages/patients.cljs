@@ -14,7 +14,7 @@
 (rf/reg-event-fx
  :patients/index
  (fn [coef [_ query]]
-   {:dispatch [:fhir/search {:resourceType "Patient" :query query}]}))
+   {:dispatch [:fhir/search {:resourceType "Patient" :query {:name query}}]}))
 
 (defn format-date [x] x)
 
@@ -174,7 +174,7 @@
     (fn [params]
       [:div.index.container
        [:div.form
-        [:div.row 
+        [:div.row
          [:div.col-md-6
           [form/row {:path [:name 0 :given 0]
                      :errors errors
@@ -224,15 +224,15 @@
        [patient-form path]])))
 
 (defn new-patient [params]
-  (let [path [:form :Patient :new]]
-    (rf/dispatch [:db/write path {:resourceType "Patient"}])
+  (let [path [:form :patient :new]]
+    (rf/dispatch [:db/write path {:resourcetype "patient"}])
     (fn [_]
       [:div
-       [:h3 "Register patient"]
+       [:h3 "register patient"]
        [:hr]
        [patient-form path]])))
 
 (def pages {:patients/index index
             :patients/new new-patient
             :patients/edit edit-patient
-            :patients/show show-patient})
+            :patients/show show-patient })

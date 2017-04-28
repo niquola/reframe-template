@@ -3,6 +3,7 @@
   (:require
    [reagent.core :as reagent]
    [ui.pages.patients :as patients]
+   [ui.pages.coverages :as coverages]
    [ui.pages.user :as user]
    [ui.pages.database :as database]
    [re-frame.core :as rf]
@@ -40,5 +41,6 @@
 (def pages (merge {:core/index index
                    :core/notifications notifications}
                   patients/pages
+                  coverages/pages
                   database/pages
                   user/pages))

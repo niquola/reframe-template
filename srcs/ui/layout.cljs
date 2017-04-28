@@ -87,17 +87,17 @@
                (wgt/icon :user)
                " Demographics"]]
              [:li.nav-item
-              [:a.nav-link {:href (href :patients (:id pt) :insurances)}
+              [:a.nav-link {:href (href :patients (:id pt) :coverages)}
                (wgt/icon :usd)
                " Insurances"]]
 
              [:li.nav-item
-              [:a.nav-link {:href (href :patients (:id pt) :insurances)}
+              [:a.nav-link {:href (href :patients (:id pt) :coverages)}
                (wgt/icon :ambulance)
                " Encounters"]]
 
              [:li.nav-item
-              [:a.nav-link {:href (href :patients (:id pt) :insurances)}
+              [:a.nav-link {:href (href :patients (:id pt) :coverages)}
                (wgt/icon :ambulance)
                " Allergies"]]
 
