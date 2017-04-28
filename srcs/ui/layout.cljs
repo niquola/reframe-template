@@ -54,12 +54,18 @@
              (or (:family (first n)) []))))
 
 (defn badge [pt]
-  [:div
+  [:div.badge
    [styles/style
-    [:.avatar [:i {:font-size "40px" :color "gray"}]]]
+    [:.badge
+     {:text-align "center"}
+     [:.inform {:text-align "center" :font-size "18px"}]
+     [:.avatar {:text-align "center"}
+      [:i {:font-size "80px" :color "gray"}]]]]
    [:div.avatar [wgt/icon :user-circle]]
    [:br]
-   [:b (human-name (:name pt))]])
+   [:div.inform
+    [:a.nav-link {:href (href :patients (:id pt))}
+     (human-name (:name pt))]]])
 
 (defn layout [content]
   (let [current-pt (rf/subscribe [:patients/current-patient])]
@@ -77,8 +83,23 @@
             [:hr]
             [:ul.nav.flex-column
              [:li.nav-item
-              [:a.nav-link {:href (href :patients (:id pt) :edit)} "Demographics"]]
+              [:a.nav-link {:href (href :patients (:id pt) :edit)}
+               (wgt/icon :user)
+               " Demographics"]]
              [:li.nav-item
-              [:a.nav-link {:href (href :patients (:id pt) :insurances)} "Insurances"]]
+              [:a.nav-link {:href (href :patients (:id pt) :insurances)}
+               (wgt/icon :usd)
+               " Insurances"]]
+
+             [:li.nav-item
+              [:a.nav-link {:href (href :patients (:id pt) :insurances)}
+               (wgt/icon :ambulance)
+               " Encounters"]]
+
+             [:li.nav-item
+              [:a.nav-link {:href (href :patients (:id pt) :insurances)}
+               (wgt/icon :ambulance)
+               " Allergies"]]
+
              ]]]]
          [:div.container content])])))

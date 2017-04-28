@@ -80,6 +80,11 @@
     (fn [params]
       [:div.index.container-fluid
        [:h3 "Patient " [:a.btn.btn-default {:href (href :patients (:id @pt) :edit)} "Edit"]]
+       [:hr]
+
+       [:img {:src "https://www.smashingmagazine.com/images/graphs-icon-set/graphs.jpg"}]
+
+       [:hr]
        [wgt/pp @pt]])))
 
 
