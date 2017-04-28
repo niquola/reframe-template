@@ -52,12 +52,27 @@
      {:dispatch  [:fhir/read {:resourceType "Coverage" :id (:coverage/id params) :into [:current-coverage]}]}
      {:dispatch  [:db/write [:current-coverage] nil]})))
 
+
+(defn validate [_] {})
 (defn show [{id :coverage/id}]
-  (let [coverage (rf/subscribe [:coverages/current-coverage])]
+  (let [path [:form :Coverage id]
+        cv (rf/subscribe [:db/by-path path])
+        errors (reaction (validate @cv)) ]
+    (rf/dispatch [:db/write path {}])
+    (rf/dispatch [:fhir/read {:resourceType "Coverage" :id id :into path}])
     (fn [_]
-      [:div
-       [:pre (pr-str @coverage)]
-       [:div "sshow " id]])))
+      [:div.form-group
+       [form/row {:path [:bin]
+                  :errors errors
+                  :label "BIN"
+                  :base-path path
+                  :as form/input}]
+       [:hr]
+       ;[:div.form-group
+         ;[form/submit-btn save-fn "Save"]
+         ;" "
+         ;[form/cancel-btn cancel-fn "Cancel"]]
+       ])))
 
 (def pages {:coverages/index index
             :coverages/show show })
