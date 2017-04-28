@@ -1,6 +1,9 @@
 UI project template
 ===================
 
+(Live demo)[http://cleo-poc-bucket.s3-website-us-west-1.amazonaws.com/]
+
+
 ## Getting started
 
 ## Routing
