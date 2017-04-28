@@ -24,7 +24,17 @@ jobs:
           paths:
             - /root/.m2
             - $HOME/.lein
-          key: clj-1
+          key: << checksum "project.clj" >>
+
+      - run: cp resources/public/index.html build
+      - run: cp resources/public/icon.png build
+
+      - deploy:
+          command: |
+              if [ "${CIRCLE_BRANCH}" == "master" ]; then
+                apt-get update && apt-get install -y awscli
+                aws s3 cp --recursive build s3://cleo-poc-bucket
+              fi
+
       - store_artifacts:
-          path: build
-          destination: public
+          path: builid
