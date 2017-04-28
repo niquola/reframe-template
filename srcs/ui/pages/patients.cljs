@@ -37,12 +37,12 @@
   (let [patients (rf/subscribe [:patients/index])]
     (fn [params]
       [:div.index.container-fluid
-       [:h3 "Patient list"]
        [:input.form-control {:type "text"
                              :placeholder "Search Patient"
                              :on-key-down (fn [ev]
                                             (when (= 13 (.-which ev))
                                               (rf/dispatch [:patients/index (.. ev -target -value)])))}]
+       [:br]
        [:table.table
         [:thead
          [:tr
@@ -173,7 +173,6 @@
 
     (fn [params]
       [:div.index.container
-       [:h3 "Update Patient"]
        [:div.form
         [:div.row 
          [:div.col-md-6
@@ -218,13 +217,20 @@
     (rf/dispatch [:db/write path {}])
     (rf/dispatch [:fhir/read {:resourceType "Patient"
                               :id pid :into path}])
-    (fn [] [patient-form path])))
+    (fn [_]
+      [:div
+       [:h3 "Update patient"]
+       [:hr]
+       [patient-form path]])))
 
 (defn new-patient [params]
   (let [path [:form :Patient :new]]
     (rf/dispatch [:db/write path {:resourceType "Patient"}])
-    (fn [params]
-      [patient-form path])))
+    (fn [_]
+      [:div
+       [:h3 "Register patient"]
+       [:hr]
+       [patient-form path]])))
 
 (def pages {:patients/index index
             :patients/new new-patient
