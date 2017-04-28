@@ -26,7 +26,7 @@ jobs:
             - $HOME/.lein
           key: << checksum "project.clj" >>
 
-      - run: cp resources/public/index.html build
+      - run: cat resources/public/index.html |  sed "s/CACHE_ID/`cat build/ui.js | md5`/" > build/index.html
       - run: cp resources/public/icon.png build
 
       - deploy:
