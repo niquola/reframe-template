@@ -23,22 +23,26 @@
         coverages (rf/subscribe [:coverages]) ]
     (fn [_]
       [:div.index.container-fluid
-       [:h3 "Patient coverages"]
+       [:h3 "Patient insurance"]
        [:br]
-       [:table.table
-        [:thead
-         [:tr
-          [:th "Bin"]
-          [:th "Status"]
-          [:th "Ref"]]]
+         (if (empty? @coverages)
+           [:div [:b "Tere are not patient insurance"]
+            [:a.btn.btn-primary "Add insurance"]]
 
-        [:tbody
-         (for [[id i] @coverages]
-           [:tr {:key (:id i)}
-            [:td [:a {:href (href :patients pid :coverages (:id i))}
-                  (or (:bin i) "Some bin") ]]
-            [:td (:status i)]
-            [:td (pr-str (get-in i [:planholderReference :reference]))]])]]]
+           [:table.table
+            [:thead
+             [:tr
+              [:th "Bin"]
+              [:th "Status"]
+              [:th "Ref"]]]
+
+            [:tbody
+             (for [[id i] @coverages]
+               [:tr {:key (:id i)}
+                [:td [:a {:href (href :patients pid :coverages (:id i))}
+                      (or (:bin i) "Some bin") ]]
+                [:td (:status i)]
+                [:td (pr-str (get-in i [:planholderReference :reference]))]])]])]
        )))
 
 (rf/reg-sub-raw

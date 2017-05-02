@@ -77,7 +77,7 @@
        [styles/style [:.secondary-nav {:border-left "1px solid #ddd"}]]
        [menu]
        [:div.container
-        [:div.row
+        [:div.container-fluid
          [:ol.breadcrumb
           (for [b @breadcrumbs]
             [:li.breadcrumb-item

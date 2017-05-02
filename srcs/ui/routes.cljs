@@ -19,13 +19,11 @@
                          :. :patients/index
                          "new" {:. :patients/new}
                          [:pt/id]  {:context :patients/current-patient
-                                    :breadcrumb "Current patient"
                                     :. :patients/show
                                     "edit" {:. :patients/edit}
                                     "coverages" {:. :coverages/index
-                                                 :breadcrumb "Insurances"
+                                                 :breadcrumb "Insurance"
                                                  [:coverage/id] {:context :coverages/current-coverage
-                                                                 :breadcrumb "Current insurance"
                                                                  :. :coverages/show} } }}})
 
 (defn href
