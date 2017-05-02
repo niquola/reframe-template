@@ -11,6 +11,9 @@
     (rf/dispatch [:fragment-changed fragment])))
 
 (rf/reg-sub-raw
+ :route-map/breadcrumbs
+ (fn [db _] (reaction (:route-map/breadcrumbs @db))))
+(rf/reg-sub-raw
  :route-map/current-route
  (fn [db _] (reaction (:route-map/current-route @db))))
 
@@ -22,14 +25,28 @@
      (mapv (fn [x] [x :init params]) new-contexts)
      (mapv (fn [x] [x :deinit old-params]) to-dispose))))
 
+(defn mk-breadcrumbs [route]
+  (->> (:parents route)
+       (reduce (fn [acc v]
+                 (let [prev (last acc)
+                       uri (:uri prev)
+                       p  (last (for [[k route] prev :when (= (:. route) (:. v))] k))
+                       p (or (get-in route [:params (first p)]) p) ]
+                   (conj acc (assoc v :uri (str uri p "/")))))
+               [])
+       (filter :breadcrumb)
+       (mapv #(select-keys % [:uri :breadcrumb]))))
+
 (rf/reg-event-fx
  :fragment-changed
  (fn [{db :db} [k fragment]]
    (if-let [route (route-map/match [:. (str/replace fragment #"^#" "")] (:route-map/routes db))]
      (let [contexts (->> (:parents route) (mapv :context) (filterv identity))
+           breadcrumbs (mk-breadcrumbs route)
            dispose-context (or  [])]
        {:db (assoc db :fragment fragment
                    :route/context contexts
+                   :route-map/breadcrumbs breadcrumbs
                    :route-map/current-route route)
         :dispatch-n (contexts-diff (:route/context db)
                                    contexts

@@ -19,7 +19,7 @@ Open localhost:3000
 
 ## Styles
 
-We use bootstrap-4 with (garden)[https://github.com/noprompt/garden] for local styles (just in components).
+We use bootstrap-4 with [Garden](https://github.com/noprompt/garden) for local styles (just in components).
 
 ```cljs
 

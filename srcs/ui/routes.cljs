@@ -11,22 +11,27 @@
 ;; You could use context to init common state for some branch of routes
 
 (def routes {:. :core/index
+             :breadcrumb "Home"
              "profile"  {:. :user/profile}
              "notifications" {:. :core/notifications}
              "db" {:. :database/index}
-             "patients" {:. :patients/index
+             "patients" {:breadcrumb "Patients"
+                         :. :patients/index
                          "new" {:. :patients/new}
                          [:pt/id]  {:context :patients/current-patient
+                                    :breadcrumb "Current patient"
                                     :. :patients/show
                                     "edit" {:. :patients/edit}
                                     "coverages" {:. :coverages/index
+                                                 :breadcrumb "Insurances"
                                                  [:coverage/id] {:context :coverages/current-coverage
+                                                                 :breadcrumb "Current insurance"
                                                                  :. :coverages/show} } }}})
 
 (defn href
   ;; helper function to build urls also check url
   ;; is valid for current routing
-  ;; (href :patients 5) => #/patients/5 
+  ;; (href :patients 5) => #/patients/5
   [& parts]
   (let [url (str "/" (str/join "/" (map (fn [x] (if (keyword? x) (name x) (str x))) parts)))]
     (when-not  (route-map/match [:. url] routes)

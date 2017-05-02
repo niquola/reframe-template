@@ -69,12 +69,19 @@
      (human-name (:name pt))]]])
 
 (defn layout [content]
-  (let [current-pt (rf/subscribe [:patients/current-patient])]
+  (let [current-pt (rf/subscribe [:patients/current-patient])
+        breadcrumbs (rf/subscribe [:route-map/breadcrumbs]) ]
     (fn []
       [:div.app
        [:style styles/basic-style]
        [styles/style [:.secondary-nav {:border-left "1px solid #ddd"}]]
        [menu]
+       [:div.container
+        [:div.row
+         [:ol.breadcrumb
+          (for [b @breadcrumbs]
+            [:li.breadcrumb-item
+             [:a {:href (str "#" (:uri b))} (:breadcrumb b)]])] ]]
        (if-let [pt @current-pt]
          [:div.container
           [:div.row
