@@ -1,26 +1,25 @@
 UI project template
 ===================
 
-(Live demo)[http://cleo-poc-bucket.s3-website-us-west-1.amazonaws.com/]
+[Live demo](http://cleo-poc-bucket.s3-website-us-west-1.amazonaws.com/)
 
 
 ## How to setup dev environment
 
-```
-lein repl
+Install [Leiningen](https://leiningen.org/)
 
-> (start-fw)
+ ``` bash
+ lein repl
+ > (start-fw)
+ ```
 
-# open localhost:3000
-```
-
+Open localhost:3000
 
 ## Routing
 
-## Styles 
+## Styles
 
-We use bootstrap-4 with (garden)[https://github.com/noprompt/garden] 
-for local styles (just in components).
+We use bootstrap-4 with (garden)[https://github.com/noprompt/garden] for local styles (just in components).
 
 ```cljs
 
@@ -44,7 +43,7 @@ TODO: form builder and validation
 ## Now to add new page
 
 * create directory with core.cljs - for example ui/patients/core.cljs
-* define page components in core.cljs and register under some key with 
+* define page components in core.cljs and register under some key with
   (ui.pages/reg-page :page-key component-function)
 * require page namespace in ui.core.cljs
 * put routing to pages in ui.routes.cljs `"path" {[:param] {:. :page-key}}`
@@ -78,5 +77,15 @@ cp resources/public/index.html build/
 ls -R build
 ```
 
+## Deploy
+
+Deploy is automatically build and deplpoy app to S3 bucket from [Circle CI](https://circleci.com)
+Deploy config file located in .circleci/config.yml.
+Also, you can install [CircleCi CLI](https://github.com/circle-cli/circle-cli) for validating  config.yml file and  test deploy locally
+
+```sh
+circleci config validate
+circleci build
+```
 
 
