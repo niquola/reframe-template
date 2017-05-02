@@ -28,7 +28,8 @@
            [:div.text-center
             [:p "There are no patient insurance"]
             [:br]
-            [:button.btn.btn-primary "Add insurance"]]
+            [:a.btn.btn-primary
+              {:href (href :patients pid :coverages :new)} "Add insurance"]]
 
            [:table.table
             [:thead
@@ -43,8 +44,7 @@
                 [:td [:a {:href (href :patients pid :coverages (:id i))}
                       (or (:bin i) "Some bin") ]]
                 [:td (:status i)]
-                [:td (pr-str (get-in i [:planholderReference :reference]))]])]])]
-       )))
+                [:td (pr-str (get-in i [:planholderReference :reference]))]])]])])))
 
 (rf/reg-sub-raw
  :coverages/current-coverage
@@ -80,12 +80,13 @@
          ;[form/cancel-btn cancel-fn "Cancel"]]
        ])))
 
-(defn new [{pid :pt/id}]
+(defn new [_]
   (fn [_]
-    [:h1 "dfdf"]
-    )
-  )
+   [:div.container
+    [:h1 "New Form"]] 
+    ))
 
 (pages/reg-page :coverages/index index)
 (pages/reg-page :coverages/show show)
 (pages/reg-page :coverages/new new)
+

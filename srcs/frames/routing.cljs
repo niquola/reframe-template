@@ -10,6 +10,7 @@
   (let [fragment (.. js/window -location -hash)]
     (rf/dispatch [:fragment-changed fragment])))
 
+
 (rf/reg-sub-raw
  :route-map/breadcrumbs
  (fn [db _] (reaction (:route-map/breadcrumbs @db))))
@@ -24,6 +25,7 @@
     (concat
      (mapv (fn [x] [x :init params]) new-contexts)
      (mapv (fn [x] [x :deinit old-params]) to-dispose))))
+
 
 (defn mk-breadcrumbs [route]
   (->> (:parents route)
@@ -40,6 +42,11 @@
 (rf/reg-event-fx
  :fragment-changed
  (fn [{db :db} [k fragment]]
+
+   (.error js/console
+           (route-map/match [:. "patients" "aabef205-1942-4de9-a9f2-bf7fcce93303" "dfdf"] (:route-map/routes db)))
+
+
    (if-let [route (route-map/match [:. (str/replace fragment #"^#" "")] (:route-map/routes db))]
      (let [contexts (->> (:parents route) (mapv :context) (filterv identity))
            breadcrumbs (mk-breadcrumbs route)

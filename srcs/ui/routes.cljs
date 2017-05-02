@@ -23,9 +23,11 @@
                                     "edit" {:. :patients/edit}
                                     "coverages" {:. :coverages/index
                                                  :breadcrumb "Insurance"
-                                                 :new :coverages/new
+                                                 "new" {:. :coverages/new}
                                                  [:coverage/id] {:context :coverages/current-coverage
-                                                                 :. :coverages/show} } }}})
+                                                                 :. :coverages/show}
+
+                                                 } }}})
 
 (defn href
   ;; helper function to build urls also check url
