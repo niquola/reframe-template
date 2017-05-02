@@ -236,3 +236,4 @@
 (pages/reg-page :patients/index index)
 (pages/reg-page :patients/edit edit-patient)
 (pages/reg-page :patients/show show-patient)
+(pages/reg-page :patients/new new-patient)
