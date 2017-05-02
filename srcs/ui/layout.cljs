@@ -75,13 +75,13 @@
       [:div.app
        [:style styles/basic-style]
        [styles/style [:.secondary-nav {:border-left "1px solid #ddd"}]]
+       [styles/style [:.breadcrumb {:background "transparent"}]]
        [menu]
        [:div.container
-        [:div.container-fluid
-         [:ol.breadcrumb
-          (for [b @breadcrumbs]
-            [:li.breadcrumb-item
-             [:a {:href (str "#" (:uri b))} (:breadcrumb b)]])] ]]
+        [:ol.breadcrumb
+         (for [b @breadcrumbs]
+           [:li.breadcrumb-item
+            [:a {:href (str "#" (:uri b))} (:breadcrumb b)]])] ]
        (if-let [pt @current-pt]
          [:div.container
           [:div.row

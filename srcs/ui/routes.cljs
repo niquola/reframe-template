@@ -23,6 +23,7 @@
                                     "edit" {:. :patients/edit}
                                     "coverages" {:. :coverages/index
                                                  :breadcrumb "Insurance"
+                                                 :new :coverages/new
                                                  [:coverage/id] {:context :coverages/current-coverage
                                                                  :. :coverages/show} } }}})
 

@@ -23,11 +23,12 @@
         coverages (rf/subscribe [:coverages]) ]
     (fn [_]
       [:div.index.container-fluid
-       [:h3 "Patient insurance"]
        [:br]
          (if (empty? @coverages)
-           [:div [:b "Tere are not patient insurance"]
-            [:a.btn.btn-primary "Add insurance"]]
+           [:div.text-center
+            [:p "There are no patient insurance"]
+            [:br]
+            [:button.btn.btn-primary "Add insurance"]]
 
            [:table.table
             [:thead
@@ -79,5 +80,12 @@
          ;[form/cancel-btn cancel-fn "Cancel"]]
        ])))
 
+(defn new [{pid :pt/id}]
+  (fn [_]
+    [:h1 "dfdf"]
+    )
+  )
+
 (pages/reg-page :coverages/index index)
 (pages/reg-page :coverages/show show)
+(pages/reg-page :coverages/new new)
