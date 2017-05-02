@@ -1,4 +1,4 @@
-(ns ui.pages.patients
+(ns ui.patients.core
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [reagent.core :as reagent]
             [re-frame.core :as rf]
@@ -9,6 +9,7 @@
             [clojure.string :as str]
             [cljs.pprint :as pp]
             [re-form.core :as form]
+            [ui.pages :as pages]
             [clojure.string :as str]))
 
 (rf/reg-event-fx
@@ -232,7 +233,6 @@
        [:hr]
        [patient-form path]])))
 
-(def pages {:patients/index index
-            :patients/new new-patient
-            :patients/edit edit-patient
-            :patients/show show-patient })
+(pages/reg-page :patients/index index)
+(pages/reg-page :patients/edit edit-patient)
+(pages/reg-page :patients/show show-patient)

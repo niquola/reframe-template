@@ -1,4 +1,4 @@
-(ns ui.pages.coverages
+(ns ui.coverage.core
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [reagent.core :as reagent]
             [re-frame.core :as rf]
@@ -9,6 +9,7 @@
             [clojure.string :as str]
             [cljs.pprint :as pp]
             [re-form.core :as form]
+            [ui.pages :as pages]
             [clojure.string :as str]))
 
 
@@ -74,5 +75,5 @@
          ;[form/cancel-btn cancel-fn "Cancel"]]
        ])))
 
-(def pages {:coverages/index index
-            :coverages/show show })
+(pages/reg-page :coverages/index index)
+(pages/reg-page :coverages/show show)

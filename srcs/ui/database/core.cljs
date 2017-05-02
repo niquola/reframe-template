@@ -1,10 +1,11 @@
-(ns ui.pages.database
+(ns ui.database.core
   (:require-macros [reagent.ratom :refer [reaction]]
                    [cljs.pprint :as pp])
   (:require [reagent.core :as reagent]
             [re-frame.core :as rf]
             [ui.routes :refer [href]]
             [ui.widgets :as wgt]
+            [ui.pages :as pages]
             [clojure.string :as str]))
 
 (rf/reg-sub
@@ -18,4 +19,4 @@
        [:h3 "Database"]
        [wgt/pp @db]])))
 
-(def pages {:database/index database})
+(pages/reg-page :database/index database)

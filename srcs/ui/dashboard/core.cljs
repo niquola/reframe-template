@@ -1,11 +1,8 @@
-(ns ui.pages.core
+(ns ui.dashboard.core
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require
    [reagent.core :as reagent]
-   [ui.pages.patients :as patients]
-   [ui.pages.coverages :as coverages]
-   [ui.pages.user :as user]
-   [ui.pages.database :as database]
+   [ui.pages :as pages]
    [re-frame.core :as rf]
    [ui.widgets :as wgt]
    [clojure.string :as str]))
@@ -38,9 +35,5 @@
   [:div.container
    [:h3 "Notifications"]])
 
-(def pages (merge {:core/index index
-                   :core/notifications notifications}
-                  patients/pages
-                  coverages/pages
-                  database/pages
-                  user/pages))
+(pages/reg-page :core/index index)
+(pages/reg-page :core/notifications notifications)

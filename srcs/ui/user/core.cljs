@@ -1,8 +1,9 @@
-(ns ui.pages.user
+(ns ui.user.core
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [reagent.core :as reagent]
             [re-frame.core :as rf]
             [ui.routes :refer [href]]
+            [ui.pages :as pages]
             [clojure.string :as str]))
 
 (rf/reg-event-fx
@@ -18,4 +19,4 @@
    [:button.btn.btn-danger {:on-click #(rf/dispatch [:signout])} "Sign Out"]])
 
 
-(def pages {:user/profile profile})
+(pages/reg-page :user/profile profile)
