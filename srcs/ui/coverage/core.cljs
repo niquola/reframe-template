@@ -23,23 +23,28 @@
         coverages (rf/subscribe [:coverages]) ]
     (fn [_]
       [:div.index.container-fluid
-       [:h3 "Patient coverages"]
        [:br]
-       [:table.table
-        [:thead
-         [:tr
-          [:th "Bin"]
-          [:th "Status"]
-          [:th "Ref"]]]
+         (if (empty? @coverages)
+           [:div.text-center
+            [:p "There are no patient insurance"]
+            [:br]
+            [:a.btn.btn-primary
+              {:href (href :patients pid :coverages :new)} "Add insurance"]]
 
-        [:tbody
-         (for [[id i] @coverages]
-           [:tr {:key (:id i)}
-            [:td [:a {:href (href :patients pid :coverages (:id i))}
-                  (or (:bin i) "Some bin") ]]
-            [:td (:status i)]
-            [:td (pr-str (get-in i [:planholderReference :reference]))]])]]]
-       )))
+           [:table.table
+            [:thead
+             [:tr
+              [:th "Bin"]
+              [:th "Status"]
+              [:th "Ref"]]]
+
+            [:tbody
+             (for [[id i] @coverages]
+               [:tr {:key (:id i)}
+                [:td [:a {:href (href :patients pid :coverages (:id i))}
+                      (or (:bin i) "Some bin") ]]
+                [:td (:status i)]
+                [:td (pr-str (get-in i [:planholderReference :reference]))]])]])])))
 
 (rf/reg-sub-raw
  :coverages/current-coverage
@@ -75,5 +80,13 @@
          ;[form/cancel-btn cancel-fn "Cancel"]]
        ])))
 
+(defn new [_]
+  (fn [_]
+   [:div.container
+    [:h1 "New Form"]] 
+    ))
+
 (pages/reg-page :coverages/index index)
 (pages/reg-page :coverages/show show)
+(pages/reg-page :coverages/new new)
+
