@@ -11,23 +11,11 @@
 ;; You could use context to init common state for some branch of routes
 
 (def routes {:. :core/index
-             :breadcrumb "Home"
-             "profile"  {:. :user/profile}
-             "notifications" {:. :core/notifications}
-             "db" {:. :database/index}
              "patients" {:breadcrumb "Patients"
                          :. :patients/index
                          "new" {:. :patients/new}
-                         [:pt/id]  {:context :patients/current-patient
-                                    :. :patients/show
-                                    "edit" {:. :patients/edit}
-                                    "coverages" {:. :coverages/index
-                                                 :breadcrumb "Insurance"
-                                                 "new" {:. :coverages/new}
-                                                 [:coverage/id] {:context :coverages/current-coverage
-                                                                 :. :coverages/show}
-
-                                                 } }}})
+                         [:patient/id]  {:. :patients/show
+                                         "edit" {:. :patients/edit}}}})
 
 (defn href
   ;; helper function to build urls also check url

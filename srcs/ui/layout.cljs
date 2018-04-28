@@ -69,8 +69,7 @@
      (human-name (:name pt))]]])
 
 (defn layout [content]
-  (let [current-pt (rf/subscribe [:patients/current-patient])
-        breadcrumbs (rf/subscribe [:route-map/breadcrumbs]) ]
+  (let [breadcrumbs (rf/subscribe [:route-map/breadcrumbs]) ]
     (fn []
       [:div.app
        [:style styles/basic-style]
@@ -82,32 +81,4 @@
          (for [b @breadcrumbs]
            [:li.breadcrumb-item
             [:a {:href (str "#" (:uri b))} (:breadcrumb b)]])] ]
-       (if-let [pt @current-pt]
-         [:div.container
-          [:div.row
-           [:div.col-md-9 content]
-           [:div.col-md-3.secondary-nav
-            [badge pt]
-            [:hr]
-            [:ul.nav.flex-column
-             [:li.nav-item
-              [:a.nav-link {:href (href :patients (:id pt) :edit)}
-               (wgt/icon :user)
-               " Demographics"]]
-             [:li.nav-item
-              [:a.nav-link {:href (href :patients (:id pt) :coverages)}
-               (wgt/icon :usd)
-               " Insurances"]]
-
-             [:li.nav-item
-              [:a.nav-link {:href (href :patients (:id pt) :coverages)}
-               (wgt/icon :ambulance)
-               " Encounters"]]
-
-             [:li.nav-item
-              [:a.nav-link {:href (href :patients (:id pt) :coverages)}
-               (wgt/icon :ambulance)
-               " Allergies"]]
-
-             ]]]]
-         [:div.container content])])))
+       [:div.container content]])))
