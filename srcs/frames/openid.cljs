@@ -1,6 +1,5 @@
 (ns frames.openid
   (:require
-   [clojure.spec :as s]
    [re-frame.core :as rf]
    [clojure.string :as str]
    [goog.crypt.base64 :refer [encodeString decodeString]]))
